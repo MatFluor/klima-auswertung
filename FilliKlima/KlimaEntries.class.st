@@ -36,12 +36,12 @@ KlimaEntries class >> entries [
 	^ entries
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api' }
 KlimaEntries class >> getDay: aDate [ 
 	^ entries detect: [ :e | e date = aDate ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api' }
 KlimaEntries class >> getMaxHumDay [
 
 	^ entries inject: entries first into: [ :result :each |
@@ -50,7 +50,7 @@ KlimaEntries class >> getMaxHumDay [
 				  ifFalse: [ each ] ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api' }
 KlimaEntries class >> getMaxSpanHumDay [
 
 	^ entries inject: entries first into: [ :result :each |
@@ -59,7 +59,7 @@ KlimaEntries class >> getMaxSpanHumDay [
 				  ifFalse: [ each ] ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api' }
 KlimaEntries class >> getMaxSpanTempDay [
 
 	^ entries inject: entries first into: [ :result :each |
@@ -68,7 +68,7 @@ KlimaEntries class >> getMaxSpanTempDay [
 				  ifFalse: [ each ] ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api' }
 KlimaEntries class >> getMaxTempDay [
 
 	^  entries
@@ -79,7 +79,7 @@ KlimaEntries class >> getMaxTempDay [
 					  ifFalse: [ each ] ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api' }
 KlimaEntries class >> getMinHumDay [
 
 	^ entries inject: entries first into: [ :result :each |
@@ -88,7 +88,7 @@ KlimaEntries class >> getMinHumDay [
 				  ifFalse: [ each ] ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api' }
 KlimaEntries class >> getMinTempDay [
 
 	^ entries inject: entries first into: [ :result :each |
@@ -97,47 +97,19 @@ KlimaEntries class >> getMinTempDay [
 				  ifFalse: [ each ] ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'plots' }
 KlimaEntries class >> plotMinMaxHum [
 
-	| c lineplot lineplot2 data dates |
+	| b c lineplot lineplot2 data dates |
 	data := entries.
 	dates := data collect: [ :e | e date julianDayNumber ].
 	c := RSCompositeChart new.
 	c extent: 800 @ 400.
 	lineplot2 := (RSLinePlot new
 		              x: dates
-		              y: (data collect: [ :e | e maxHum ])) color: Color blue.
-	lineplot := (RSLinePlot new
-		             x: dates
-		             y: (data collect: [ :e | e minHum ])) color:
-		            Color darkGray .
-	c add: lineplot.
-	c add: lineplot2.
-	c horizontalTick numberOfTicks: 15.
-	c verticalTick numberOfTicks: 6.
-	c horizontalTick useDiagonalLabel.
-	c horizontalTick labelConversion: [ :l |
-		(Date julianDayNumber: l) printFormat: #( 1 2 3 $. 1 1 2 ) ].
-	c xlabel: 'Datum'.
-	c ylabel: 'Feuchtigkeit (%)'.
-	c title: 'Minimum / Maximum täglicher Durchschnitt'.
-	c open
-]
-
-{ #category : 'as yet unclassified' }
-KlimaEntries class >> plotMinMaxHumByMonth: aMonthIndex [
-
-	| c lineplot lineplot2 data dates |
-	data := entries select: [ :e | e date monthIndex = aMonthIndex ].
-	dates := data collect: [ :e | e date julianDayNumber ].
-	c := RSCompositeChart new.
-	c extent: 800 @ 400.
-	lineplot := (RSLinePlot new
-		              x: dates
 		              y: (data collect: [ :e | e maxHum ])) color:
 		             Color blue.
-	lineplot2 := (RSLinePlot new
+	lineplot := (RSLinePlot new
 		             x: dates
 		             y: (data collect: [ :e | e minHum ])) color:
 		            Color darkGray.
@@ -149,50 +121,77 @@ KlimaEntries class >> plotMinMaxHumByMonth: aMonthIndex [
 	c horizontalTick labelConversion: [ :l |
 		(Date julianDayNumber: l) printFormat: #( 1 2 3 $. 1 1 2 ) ].
 	c xlabel: 'Datum'.
-	c ylabel: 'Temperatur (°C)'.
+	c ylabel: 'Feuchtigkeit (%)'.
 	c title: 'Minimum / Maximum täglicher Durchschnitt'.
+
+	b := RSLegend new.
+	b container: c canvas.
+	b legendDo: [ :shape |
+			shape
+				withBorder;
+				padding: 10;
+				scaleBy: 0.75 ].
+	b text: 'Maximum' withBoxColor: Color blue.
+	b text: 'Minimum' withBoxColor: Color darkGray.
+	b location
+		right;
+		middle;
+		offset: 810 @ -368.
+	b build.
 	c open
 ]
 
-{ #category : 'as yet unclassified' }
-KlimaEntries class >> plotMinMaxTemp [
+{ #category : 'plots' }
+KlimaEntries class >> plotMinMaxHumByMonth: aMonthIndex andYear: aYear [
 
-	| c lineplot lineplot2 lineplot3 data dates |
-	data := entries.
+	| b c lineplot lineplot2 data dates |
+	data := entries select: [ :e |
+		        e date monthIndex = aMonthIndex and: e date year = aYear ].
 	dates := data collect: [ :e | e date julianDayNumber ].
 	c := RSCompositeChart new.
 	c extent: 800 @ 400.
 	lineplot := (RSLinePlot new
-		              x: dates
-		              y: (data collect: [ :e | e maxTemp ])) color:
-		             Color red.
-	lineplot2 := (RSLinePlot new
 		             x: dates
-		             y: (data collect: [ :e | e minTemp ])) color:
-		            Color purple.
-	lineplot3 := (RSLinePlot new
+		             y: (data collect: [ :e | e maxHum ])) color: Color blue.
+	lineplot2 := (RSLinePlot new
 		              x: dates
-		              y: (data collect: [ :e | e getAverageTaupunkt ])) color:
-		             Color blue .
+		              y: (data collect: [ :e | e minHum ])) color:
+		             Color purple.
 	c add: lineplot.
 	c add: lineplot2.
-	c add: lineplot3.
 	c horizontalTick numberOfTicks: 15.
 	c verticalTick numberOfTicks: 6.
 	c horizontalTick useDiagonalLabel.
 	c horizontalTick labelConversion: [ :l |
 		(Date julianDayNumber: l) printFormat: #( 1 2 3 $. 1 1 2 ) ].
 	c xlabel: 'Datum'.
-	c ylabel: 'Temperatur (°C)'.
-	c title: 'Minimum / Maximum täglicher Durchschnitt'.
+	c ylabel: 'Feuchtigkeit (%)'.
+	c title: 'Minimum / Maximum täglicher Durchschnitt, '
+		, data first date germanMonthName , ' '
+		, data first date year printString.
+
+	b := RSLegend new.
+	b container: c canvas.
+	b legendDo: [ :shape |
+			shape
+				withBorder;
+				padding: 10;
+				scaleBy: 0.75 ].
+	b text: 'Maximum' withBoxColor: Color blue.
+	b text: 'Minimum' withBoxColor: Color purple.
+	b location
+		right;
+		middle;
+		offset: 810 @ -368.
+	b build.
 	c open
 ]
 
-{ #category : 'as yet unclassified' }
-KlimaEntries class >> plotMinMaxTempByMonth: aMonthIndex [
+{ #category : 'plots' }
+KlimaEntries class >> plotMinMaxTemp [
 
-	| c lineplot lineplot2 lineplot3 data dates |
-	data := entries select: [ :e | e date monthIndex = aMonthIndex ].
+	| b c lineplot lineplot2 lineplot3 data dates |
+	data := entries.
 	dates := data collect: [ :e | e date julianDayNumber ].
 	c := RSCompositeChart new.
 	c extent: 800 @ 400.
@@ -218,6 +217,76 @@ KlimaEntries class >> plotMinMaxTempByMonth: aMonthIndex [
 	c xlabel: 'Datum'.
 	c ylabel: 'Temperatur (°C)'.
 	c title: 'Minimum / Maximum täglicher Durchschnitt'.
+
+	b := RSLegend new.
+	b container: c canvas.
+	b legendDo: [ :shape |
+			shape
+				withBorder;
+				padding: 10;
+				scaleBy: 0.75 ].
+	b text: 'Maximum' withBoxColor: Color red.
+	b text: 'Minimum' withBoxColor: Color purple.
+	b text: 'Taupunkt' withBoxColor: Color blue.
+	b location
+		right;
+		middle;
+		offset: 810 @ -368.
+	b build.
+
+
+	c open
+]
+
+{ #category : 'plots' }
+KlimaEntries class >> plotMinMaxTempByMonth: aMonthIndex andYear: aYear [
+
+	| b c lineplot lineplot2 lineplot3 data dates |
+	data := entries select: [ :e |
+		        e date monthIndex = aMonthIndex and: e date year = aYear ].
+	dates := data collect: [ :e | e date julianDayNumber ].
+	c := RSCompositeChart new.
+	c extent: 800 @ 400.
+	lineplot := (RSLinePlot new
+		             x: dates
+		             y: (data collect: [ :e | e maxTemp ])) color: Color red.
+	lineplot2 := (RSLinePlot new
+		              x: dates
+		              y: (data collect: [ :e | e minTemp ])) color:
+		             Color purple.
+	lineplot3 := (RSLinePlot new
+		              x: dates
+		              y: (data collect: [ :e | e getAverageTaupunkt ]))
+		             color: Color blue.
+	c add: lineplot.
+	c add: lineplot2.
+	c add: lineplot3.
+	c horizontalTick numberOfTicks: 15.
+	c verticalTick numberOfTicks: 6.
+	c horizontalTick useDiagonalLabel.
+	c horizontalTick labelConversion: [ :l |
+		(Date julianDayNumber: l) printFormat: #( 1 2 3 $. 1 1 2 ) ].
+	c xlabel: 'Datum'.
+	c ylabel: 'Temperatur (°C)'.
+	c title: 'Minimum / Maximum täglicher Durchschnitt, '
+		, data first date germanMonthName , ' '
+		, data first date year printString.
+
+	b := RSLegend new.
+	b container: c canvas.
+	b legendDo: [ :shape |
+			shape
+				withBorder;
+				padding: 10;
+				scaleBy: 0.75 ].
+	b text: 'Maximum' withBoxColor: Color red.
+	b text: 'Minimum' withBoxColor: Color purple.
+	b text: 'Taupunkt' withBoxColor: Color blue.
+	b location
+		right;
+		middle;
+		offset: 810 @ -368.
+	b build.
 	c open
 ]
 

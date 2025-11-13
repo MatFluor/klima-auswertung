@@ -2,7 +2,8 @@ Class {
 	#name : 'KlimaStatsPresenter',
 	#superclass : 'SpPresenter',
 	#instVars : [
-		'valuesTable'
+		'valuesTable',
+		'monthDropdown'
 	],
 	#category : 'FilliKlima-Spec',
 	#package : 'FilliKlima',
@@ -13,82 +14,98 @@ Class {
 KlimaStatsPresenter >> defaultLayout [
 
 	^ SpBoxLayout newTopToBottom
+		  spacing: 10;
 		  add: (SpFrameLayout new
 				   add: valuesTable;
 				   label: 'Wertetabelle');
 		  add: (SpBoxLayout newLeftToRight
+				   spacing: 5;
 				   add: (self newButton
 						    label: 'Jahres-Temperaturplot ansehen';
-						icon: (self iconNamed: #smallWindow);
 						    action: [ KlimaEntries plotMinMaxTemp ]);
 				   add: (self newButton
 						    label: 'Jahres-Feuchtigkeitsplot ansehen';
-						icon: (self iconNamed: #smallWindow);
 						    action: [ KlimaEntries plotMinMaxHum ]))
+		  expand: false;
+		  add: (SpBoxLayout newLeftToRight
+				   spacing: 5;
+				   add: monthDropdown;
+				   add: (self newButton
+						    label: 'Monats Temperaturplot ansehen';
+						    action: [
+								    KlimaEntries
+									    plotMinMaxTempByMonth:
+										    monthDropdown selectedItem monthIndex
+									    andYear: monthDropdown selectedItem year ]);
+				   add: (self newButton
+						    label: 'Monats Feuchtigkeitsplot ansehen';
+						    action: [
+								    KlimaEntries
+									    plotMinMaxHumByMonth:
+										    monthDropdown selectedItem monthIndex
+									    andYear: monthDropdown selectedItem year ]))
 		  expand: false;
 		  yourself
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api' }
 KlimaStatsPresenter >> getValues [
 
 	^ {
 		  {
 			  'Tag mit höchstem Temperaturunterschied'.
-			  KlimaEntries getMaxSpanTempDay date.
+			  KlimaEntries getMaxSpanTempDay.
 			  KlimaEntries getMaxSpanTempDay spanTempString }.
 		  {
 			  'Tag mit höchstem Feuchtigkeitsunterschied'.
-			  KlimaEntries getMaxSpanHumDay date.
+			  KlimaEntries getMaxSpanHumDay.
 			  KlimaEntries getMaxSpanHumDay spanHumString }.
 		  {
 			  'Tag mit höchster Temperatur'.
-			  KlimaEntries getMaxTempDay date.
+			  KlimaEntries getMaxTempDay.
 			  KlimaEntries getMaxTempDay temperatures max printString }.
 		  {
 			  'Tag mit höchster Feuchtigkeit'.
-			  KlimaEntries getMaxHumDay date.
+			  KlimaEntries getMaxHumDay.
 			  KlimaEntries getMaxHumDay humidities max printString }.
 		  {
 			  'Tag mit tiefster Temperatur'.
-			  KlimaEntries getMinTempDay date.
+			  KlimaEntries getMinTempDay.
 			  KlimaEntries getMinTempDay temperatures min printString }.
 		  {
 			  'Tag mit tiefster Feuchtigkeit'.
-			  KlimaEntries getMinHumDay date.
+			  KlimaEntries getMinHumDay.
 			  KlimaEntries getMinHumDay humidities min printString } }
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'initialization' }
 KlimaStatsPresenter >> initializePresenters [
+
 	valuesTable := self tableView.
+	monthDropdown := self newDropList items:
+		                 (KlimaEntries entries collect: [ :e | e date month ])
+			                 removeDuplicates; display: [ :e | e monat ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api' }
 KlimaStatsPresenter >> rightClickActions [
 
 	^ SpActionGroup new
 		  addActionWith: [ :item |
 				  item
 					  name: 'Rohdaten Inspector öffnen';
-					  action: [
-							  (KlimaEntries entries detect: [ :e |
-									   e date = valuesTable selectedItem second ]) inspect ] ];
+					  action: [ valuesTable selectedItem second inspect ] ];
 		  addActionWith: [ :item |
 				  item
 					  name: 'Temperaturplot ansehen';
-					  action: [
-							  (KlimaEntries entries detect: [ :e |
-									   e date = valuesTable selectedItem second ]) plotTemp ] ];
-						addActionWith: [ :item |
+					  action: [valuesTable selectedItem second plotTemp ] ];
+		  addActionWith: [ :item |
 				  item
 					  name: 'Feuchtigkeitsplot ansehen';
-					  action: [
-							  (KlimaEntries entries detect: [ :e |
-									   e date = valuesTable selectedItem second ]) plotHum ] ]
+					  action: [ valuesTable selectedItem second  plotHum ] ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api' }
 KlimaStatsPresenter >> tableView [
 
 	^ SpTablePresenter new
