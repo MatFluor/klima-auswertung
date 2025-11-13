@@ -59,6 +59,24 @@ Day >> date: anObject [
 ]
 
 { #category : 'statistics' }
+Day >> getAverageTaupunkt [
+	"Temperatur über 0 ° C: k2=17.62, k3=243.12
+Temperatur 0 ° C oder darunter: k2=22.46, k3=272.62
+Temperatur t, Luftfeuchtigkeit l
+Taupunkt = k3*((k2*t)/(k3+t)+ln(l/100))/((k2*k3)/(k3+t)-ln(l/100))"
+
+	| k2 k3 tp l t |
+	k2 := 17.62.
+	k3 := 243.12.
+	l := humidities average.
+	t := temperatures average.
+			tp := k3 * (k2 * t / (k3 + t) + (l / 100) ln)
+			      / (k2 * k3 / (k3 + t) - (l / 100) ln).
+			
+	^ tp
+]
+
+{ #category : 'statistics' }
 Day >> getTaupunkte [
 "Temperatur über 0 ° C: k2=17.62, k3=243.12
 Temperatur 0 ° C oder darunter: k2=22.46, k3=272.62
@@ -168,7 +186,8 @@ Day >> plotTemp [
 
 { #category : 'printing' }
 Day >> printOn: aStream [
-	aStream nextPutAll: date
+
+	aStream nextPutAll: (date printFormat: #(1 2 3 $. 1 1 2))
 ]
 
 { #category : 'statistics' }

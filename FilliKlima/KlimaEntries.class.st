@@ -100,22 +100,56 @@ KlimaEntries class >> getMinTempDay [
 { #category : 'as yet unclassified' }
 KlimaEntries class >> plotMinMaxHum [
 
-	| c lineplot lineplot2 |
+	| c lineplot lineplot2 data dates |
+	data := entries.
+	dates := data collect: [ :e | e date julianDayNumber ].
 	c := RSCompositeChart new.
 	c extent: 800 @ 400.
-	lineplot2 := (RSLinePlot new y: (entries collect: [ :e | e maxHum ]))
-		             color: Color blue.
-	lineplot := (RSLinePlot new y: (entries collect: [ :e | e minHum ]))
-		            color: Color darkGray.
+	lineplot2 := (RSLinePlot new
+		              x: dates
+		              y: (data collect: [ :e | e maxHum ])) color: Color blue.
+	lineplot := (RSLinePlot new
+		             x: dates
+		             y: (data collect: [ :e | e minHum ])) color:
+		            Color darkGray .
 	c add: lineplot.
 	c add: lineplot2.
 	c horizontalTick numberOfTicks: 15.
 	c verticalTick numberOfTicks: 6.
 	c horizontalTick useDiagonalLabel.
 	c horizontalTick labelConversion: [ :l |
-		entries at: l + 1 ifAbsent: [ entries last ] ].
+		(Date julianDayNumber: l) printFormat: #( 1 2 3 $. 1 1 2 ) ].
 	c xlabel: 'Datum'.
-	c ylabel: 'Rel. Feuchtigkeit'.
+	c ylabel: 'Feuchtigkeit (%)'.
+	c title: 'Minimum / Maximum täglicher Durchschnitt'.
+	c open
+]
+
+{ #category : 'as yet unclassified' }
+KlimaEntries class >> plotMinMaxHumByMonth: aMonthIndex [
+
+	| c lineplot lineplot2 data dates |
+	data := entries select: [ :e | e date monthIndex = aMonthIndex ].
+	dates := data collect: [ :e | e date julianDayNumber ].
+	c := RSCompositeChart new.
+	c extent: 800 @ 400.
+	lineplot := (RSLinePlot new
+		              x: dates
+		              y: (data collect: [ :e | e maxHum ])) color:
+		             Color blue.
+	lineplot2 := (RSLinePlot new
+		             x: dates
+		             y: (data collect: [ :e | e minHum ])) color:
+		            Color darkGray.
+	c add: lineplot.
+	c add: lineplot2.
+	c horizontalTick numberOfTicks: 15.
+	c verticalTick numberOfTicks: 6.
+	c horizontalTick useDiagonalLabel.
+	c horizontalTick labelConversion: [ :l |
+		(Date julianDayNumber: l) printFormat: #( 1 2 3 $. 1 1 2 ) ].
+	c xlabel: 'Datum'.
+	c ylabel: 'Temperatur (°C)'.
 	c title: 'Minimum / Maximum täglicher Durchschnitt'.
 	c open
 ]
@@ -123,22 +157,66 @@ KlimaEntries class >> plotMinMaxHum [
 { #category : 'as yet unclassified' }
 KlimaEntries class >> plotMinMaxTemp [
 
-	| c lineplot lineplot2 |
+	| c lineplot lineplot2 lineplot3 data dates |
+	data := entries.
+	dates := data collect: [ :e | e date julianDayNumber ].
 	c := RSCompositeChart new.
 	c extent: 800 @ 400.
-	lineplot2 := (RSLinePlot new y: (entries collect: [ :e | e maxTemp ]))
-		             color: Color red.
-	lineplot := (RSLinePlot new y: (entries collect: [ :e | e minTemp ]))
-		            color: Color darkGray.
+	lineplot := (RSLinePlot new
+		              x: dates
+		              y: (data collect: [ :e | e maxTemp ])) color:
+		             Color red.
+	lineplot2 := (RSLinePlot new
+		             x: dates
+		             y: (data collect: [ :e | e minTemp ])) color:
+		            Color purple.
+	lineplot3 := (RSLinePlot new
+		              x: dates
+		              y: (data collect: [ :e | e getAverageTaupunkt ])) color:
+		             Color blue .
 	c add: lineplot.
 	c add: lineplot2.
+	c add: lineplot3.
 	c horizontalTick numberOfTicks: 15.
 	c verticalTick numberOfTicks: 6.
 	c horizontalTick useDiagonalLabel.
 	c horizontalTick labelConversion: [ :l |
-		entries at: l + 1 ifAbsent: [ entries last ] ].
+		(Date julianDayNumber: l) printFormat: #( 1 2 3 $. 1 1 2 ) ].
 	c xlabel: 'Datum'.
-	c ylabel: 'Temperatur'.
+	c ylabel: 'Temperatur (°C)'.
+	c title: 'Minimum / Maximum täglicher Durchschnitt'.
+	c open
+]
+
+{ #category : 'as yet unclassified' }
+KlimaEntries class >> plotMinMaxTempByMonth: aMonthIndex [
+
+	| c lineplot lineplot2 lineplot3 data dates |
+	data := entries select: [ :e | e date monthIndex = aMonthIndex ].
+	dates := data collect: [ :e | e date julianDayNumber ].
+	c := RSCompositeChart new.
+	c extent: 800 @ 400.
+	lineplot := (RSLinePlot new
+		             x: dates
+		             y: (data collect: [ :e | e maxTemp ])) color: Color red.
+	lineplot2 := (RSLinePlot new
+		              x: dates
+		              y: (data collect: [ :e | e minTemp ])) color:
+		             Color purple.
+	lineplot3 := (RSLinePlot new
+		              x: dates
+		              y: (data collect: [ :e | e getAverageTaupunkt ]))
+		             color: Color blue.
+	c add: lineplot.
+	c add: lineplot2.
+	c add: lineplot3.
+	c horizontalTick numberOfTicks: 15.
+	c verticalTick numberOfTicks: 6.
+	c horizontalTick useDiagonalLabel.
+	c horizontalTick labelConversion: [ :l |
+		(Date julianDayNumber: l) printFormat: #( 1 2 3 $. 1 1 2 ) ].
+	c xlabel: 'Datum'.
+	c ylabel: 'Temperatur (°C)'.
 	c title: 'Minimum / Maximum täglicher Durchschnitt'.
 	c open
 ]
@@ -146,30 +224,7 @@ KlimaEntries class >> plotMinMaxTemp [
 { #category : 'instance creation' }
 KlimaEntries class >> readFrom: aCsv [
 
-	| values newDay |
-	self reset.
-	values := (NeoCSVReader on: aCsv asFileReference readStream)
-		          separator: $;;
-		          skipHeader;
-		          addIntegerField;
-		          addField;
-		          addFloatField;
-		          addFloatField;
-		          upToEnd.
-
-	values
-		do: [ :v |
-				entries
-					detect: [ :e | e date = ((v at: 2) splitOn: ' ') first ]
-					ifFound: [ :d |
-							d temperatures add: (v at: 4).
-							d humidities add: (v at: 3) ]
-					ifNone: [
-							newDay := Day new date: ((v at: 2) splitOn: ' ') first.
-							newDay temperatures add: (v at: 4).
-							newDay humidities add: (v at: 3).
-							entries add: newDay ] ]
-		displayingProgress: [ 'Lese CSV ein, bitte warten...' ]
+	self readFromFile: aCsv asFileReference.
 ]
 
 { #category : 'instance creation' }
@@ -188,13 +243,17 @@ KlimaEntries class >> readFromFile: aCsvFile [
 
 	values
 		do: [ :v |
+			| vDate |
+				vDate := Date
+					         readFrom: ((v at: 2) splitOn: ' ') first
+					         pattern: 'dd.mm.yyyy'.
 				entries
-					detect: [ :e | e date = ((v at: 2) splitOn: ' ') first ]
+					detect: [ :e | e date = vDate ]
 					ifFound: [ :d |
 							d temperatures add: (v at: 4).
 							d humidities add: (v at: 3) ]
 					ifNone: [
-							newDay := Day new date: ((v at: 2) splitOn: ' ') first.
+							newDay := Day new date: vDate.
 							newDay temperatures add: (v at: 4).
 							newDay humidities add: (v at: 3).
 							entries add: newDay ] ]
