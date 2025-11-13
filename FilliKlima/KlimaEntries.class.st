@@ -24,12 +24,18 @@ Class {
 	#name : 'KlimaEntries',
 	#superclass : 'Object',
 	#classInstVars : [
-		'entries'
+		'entries',
+		'default'
 	],
 	#category : 'FilliKlima-Core',
 	#package : 'FilliKlima',
 	#tag : 'Core'
 }
+
+{ #category : 'accessing' }
+KlimaEntries class >> default [
+	^ default ifNil: [ default := self basicNew ].
+]
 
 { #category : 'accessing' }
 KlimaEntries class >> entries [
@@ -138,7 +144,7 @@ KlimaEntries class >> plotMinMaxHum [
 		middle;
 		offset: 810 @ -368.
 	b build.
-	c open
+	^ c asPresenter
 ]
 
 { #category : 'plots' }
@@ -184,7 +190,7 @@ KlimaEntries class >> plotMinMaxHumByMonth: aMonthIndex andYear: aYear [
 		middle;
 		offset: 810 @ -368.
 	b build.
-	c open
+	^ c asPresenter
 ]
 
 { #category : 'plots' }
@@ -233,9 +239,7 @@ KlimaEntries class >> plotMinMaxTemp [
 		middle;
 		offset: 810 @ -368.
 	b build.
-
-
-	c open
+	^ c asPresenter
 ]
 
 { #category : 'plots' }
@@ -287,7 +291,7 @@ KlimaEntries class >> plotMinMaxTempByMonth: aMonthIndex andYear: aYear [
 		middle;
 		offset: 810 @ -368.
 	b build.
-	c open
+	^ c asPresenter
 ]
 
 { #category : 'instance creation' }
@@ -332,4 +336,9 @@ KlimaEntries class >> readFromFile: aCsvFile [
 { #category : 'instance creation' }
 KlimaEntries class >> reset [
 	entries := OrderedCollection new.
+]
+
+{ #category : 'accessing' }
+KlimaEntries >> default [
+	^ self class default
 ]

@@ -38,7 +38,9 @@ KlimaMainPresenter >> initializePresenters [
 				              chosenFile := StOpenFilePresenter new openModal
 					                            first.
 				              KlimaEntries readFromFile: chosenFile.
-				              self layout add: KlimaStatsPresenter new ]
+				              self layout add:
+						              (KlimaStatsPresenter newApplication:
+								               self application). ]
 ]
 
 { #category : 'accessing' }

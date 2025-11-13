@@ -3,7 +3,8 @@ Class {
 	#superclass : 'SpPresenter',
 	#instVars : [
 		'valuesTable',
-		'monthDropdown'
+		'monthDropdown',
+		'chartPresenter'
 	],
 	#category : 'FilliKlima-Spec',
 	#package : 'FilliKlima',
@@ -22,10 +23,12 @@ KlimaStatsPresenter >> defaultLayout [
 				   spacing: 5;
 				   add: (self newButton
 						    label: 'Jahres-Temperaturplot ansehen';
-						    action: [ KlimaEntries plotMinMaxTemp ]);
+						    action: [
+							    chartPresenter layout add: KlimaEntries plotMinMaxTemp open ]);
 				   add: (self newButton
 						    label: 'Jahres-Feuchtigkeitsplot ansehen';
-						    action: [ KlimaEntries plotMinMaxHum ]))
+						    action: [
+							    chartPresenter layout add: KlimaEntries plotMinMaxHum open ]))
 		  expand: false;
 		  add: (SpBoxLayout newLeftToRight
 				   spacing: 5;
@@ -33,17 +36,17 @@ KlimaStatsPresenter >> defaultLayout [
 				   add: (self newButton
 						    label: 'Monats Temperaturplot ansehen';
 						    action: [
-								    KlimaEntries
-									    plotMinMaxTempByMonth:
-										    monthDropdown selectedItem monthIndex
-									    andYear: monthDropdown selectedItem year ]);
+								    chartPresenter layout add: (KlimaEntries
+											     plotMinMaxTempByMonth:
+												     monthDropdown selectedItem monthIndex
+											     andYear: monthDropdown selectedItem year) open ]);
 				   add: (self newButton
 						    label: 'Monats Feuchtigkeitsplot ansehen';
 						    action: [
-								    KlimaEntries
-									    plotMinMaxHumByMonth:
-										    monthDropdown selectedItem monthIndex
-									    andYear: monthDropdown selectedItem year ]))
+								    chartPresenter layout add: (KlimaEntries
+											     plotMinMaxHumByMonth:
+												     monthDropdown selectedItem monthIndex
+											     andYear: monthDropdown selectedItem year) open ]))
 		  expand: false;
 		  yourself
 ]
@@ -79,12 +82,22 @@ KlimaStatsPresenter >> getValues [
 ]
 
 { #category : 'initialization' }
+KlimaStatsPresenter >> initialize [
+
+	super initialize.
+]
+
+{ #category : 'initialization' }
 KlimaStatsPresenter >> initializePresenters [
 
 	valuesTable := self tableView.
-	monthDropdown := self newDropList items:
-		                 (KlimaEntries entries collect: [ :e | e date month ])
-			                 removeDuplicates; display: [ :e | e monat ]
+	monthDropdown := self newDropList
+		                 items:
+			                 (KlimaEntries entries collect: [ :e |
+					                  e date month ]) removeDuplicates;
+		                 display: [ :e | e monat ].
+	chartPresenter := KlimaChartPresenter newApplication:
+		                  self application.
 ]
 
 { #category : 'api' }
@@ -98,11 +111,15 @@ KlimaStatsPresenter >> rightClickActions [
 		  addActionWith: [ :item |
 				  item
 					  name: 'Temperaturplot ansehen';
-					  action: [valuesTable selectedItem second plotTemp ] ];
+					  action: [
+							  chartPresenter layout add:
+									  valuesTable selectedItem second plotTemp open ] ];
 		  addActionWith: [ :item |
 				  item
 					  name: 'Feuchtigkeitsplot ansehen';
-					  action: [ valuesTable selectedItem second  plotHum ] ]
+					  action: [
+							  chartPresenter layout add:
+									  valuesTable selectedItem second plotHum open ] ]
 ]
 
 { #category : 'api' }

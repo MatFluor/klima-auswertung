@@ -138,7 +138,7 @@ Day >> minTemp [
 { #category : 'plots' }
 Day >> plotHum [
 
-	| c lineplot |
+	| b c lineplot |
 	c := RSCompositeChart new.
 	c extent: 800 @ 400.
 	lineplot := RSLinePlot new.
@@ -150,15 +150,28 @@ Day >> plotHum [
 	c horizontalTick useDiagonalLabel.
 	c xlabel: 'Uhrzeit'.
 	c ylabel: 'Rel. Feuchtigkeit'.
-	c title: self date.
+	c title:(self date printFormat: #(1 2 3 $. 1 1 2)).
 	c add: lineplot.
-	c open
+	b := RSLegend new.
+	b container: c canvas.
+	b legendDo: [ :shape |
+			shape
+				withBorder;
+				padding: 10;
+				scaleBy: 0.75 ].
+	b text: 'Feuchtigkeit' withBoxColor: Color blue.
+	b location
+		right;
+		middle;
+		offset: 810 @ -368.
+	b build.
+	^ c asPresenter
 ]
 
 { #category : 'plots' }
 Day >> plotTemp [
 
-	| c lineplot b |
+	| b c lineplot b |
 	c := RSCompositeChart new.
 	c extent: 800 @ 400.
 	lineplot := RSLinePlot new.
@@ -170,18 +183,26 @@ Day >> plotTemp [
 	c horizontalTick useDiagonalLabel.
 	c xlabel: 'Uhrzeit'.
 	c ylabel: 'Temperatur'.
-	c title: self date.
+	c title: (self date printFormat: #(1 2 3 $. 1 1 2)).
 	c add: lineplot.
 
 	c add: ((RSLinePlot y: self getTaupunkte) color: Color darkGray).
 
 	b := RSLegend new.
 	b container: c canvas.
+	b legendDo: [ :shape |
+			shape
+				withBorder;
+				padding: 10;
+				scaleBy: 0.75 ].
 	b text: 'Temperatur' withBoxColor: Color red.
 	b text: 'Taupunkt' withBoxColor: Color darkGray.
-	b layout horizontal gapSize: 30.
+	b location
+		right;
+		middle;
+		offset: 810 @ -368.
 	b build.
-	c open
+	^ c asPresenter
 ]
 
 { #category : 'printing' }
