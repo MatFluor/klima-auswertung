@@ -147,8 +147,8 @@ KlimaEntries class >> plotMinMaxTemp [
 KlimaEntries class >> readFrom: aCsv [
 
 	| values newDay |
-	values := (NeoCSVReader on:
-			           'Bericht_Tabelle_111125.csv' asFileReference readStream)
+	self reset.
+	values := (NeoCSVReader on: aCsv asFileReference readStream)
 		          separator: $;;
 		          skipHeader;
 		          addIntegerField;
@@ -157,17 +157,48 @@ KlimaEntries class >> readFrom: aCsv [
 		          addFloatField;
 		          upToEnd.
 
-	values do: [ :v |
-			           entries
-				           detect: [ :e | e date = (((v at: 2) splitOn: ' ') first) ]
-				           ifFound: [ :d |
-						           d temperatures add: (v at: 4).
-						           d humidities add: (v at: 3) ]
-				           ifNone: [
-						           newDay := Day new date: (((v at: 2) splitOn: ' ') first).
-						           newDay temperatures add: (v at: 4).
-						           newDay humidities add: (v at: 3).
-						           entries add: newDay ] ] displayingProgress: [ 'Doing it' ]
+	values
+		do: [ :v |
+				entries
+					detect: [ :e | e date = ((v at: 2) splitOn: ' ') first ]
+					ifFound: [ :d |
+							d temperatures add: (v at: 4).
+							d humidities add: (v at: 3) ]
+					ifNone: [
+							newDay := Day new date: ((v at: 2) splitOn: ' ') first.
+							newDay temperatures add: (v at: 4).
+							newDay humidities add: (v at: 3).
+							entries add: newDay ] ]
+		displayingProgress: [ 'Lese CSV ein, bitte warten...' ]
+]
+
+{ #category : 'instance creation' }
+KlimaEntries class >> readFromFile: aCsvFile [
+
+	| values newDay |
+	self reset.
+	values := (NeoCSVReader on: aCsvFile readStream)
+		          separator: $;;
+		          skipHeader;
+		          addIntegerField;
+		          addField;
+		          addFloatField;
+		          addFloatField;
+		          upToEnd.
+
+	values
+		do: [ :v |
+				entries
+					detect: [ :e | e date = ((v at: 2) splitOn: ' ') first ]
+					ifFound: [ :d |
+							d temperatures add: (v at: 4).
+							d humidities add: (v at: 3) ]
+					ifNone: [
+							newDay := Day new date: ((v at: 2) splitOn: ' ') first.
+							newDay temperatures add: (v at: 4).
+							newDay humidities add: (v at: 3).
+							entries add: newDay ] ]
+		displayingProgress: [ 'Lese CSV ein, bitte warten...' ]
 ]
 
 { #category : 'instance creation' }

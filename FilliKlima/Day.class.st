@@ -127,7 +127,8 @@ Day >> plotHum [
 	lineplot y: self humidities.
 	lineplot color: Color blue.
 	c horizontalTick numberOfTicks: 24.
-	c horizontalTick labelConversion: [ :l | self times at: l + 1 ].
+	c horizontalTick labelConversion: [ :l |
+		self times at: l + 1 ifAbsent: [ self times last ] ].
 	c horizontalTick useDiagonalLabel.
 	c xlabel: 'Uhrzeit'.
 	c ylabel: 'Rel. Feuchtigkeit'.
@@ -139,23 +140,20 @@ Day >> plotHum [
 { #category : 'plots' }
 Day >> plotTemp [
 
-	| c lineplot lineplot2 b layout |
+	| c lineplot b |
 	c := RSCompositeChart new.
 	c extent: 800 @ 400.
 	lineplot := RSLinePlot new.
 	lineplot y: self temperatures.
 	lineplot color: Color red.
 	c horizontalTick numberOfTicks: 24.
-	c horizontalTick labelConversion: [ :l | self times at: l + 1 ].
+	c horizontalTick labelConversion: [ :l |
+		self times at: l + 1 ifAbsent: [ self times last ] ].
 	c horizontalTick useDiagonalLabel.
 	c xlabel: 'Uhrzeit'.
 	c ylabel: 'Temperatur'.
 	c title: self date.
 	c add: lineplot.
-	lineplot2 := RSLinePlot new.
-	lineplot2 y: self humidities.
-	lineplot2 color: Color blue.
-	c add: lineplot2.
 
 	c add: ((RSLinePlot y: self getTaupunkte) color: Color darkGray).
 
@@ -234,5 +232,5 @@ Day >> times [
 	  '19:43'. '19:53'. '20:03'. '20:13'. '20:23'. '20:33'. '20:43'.
 	  '20:53'. '21:03'. '21:13'. '21:23'. '21:33'. '21:43'. '21:53'.
 	  '22:03'. '22:13'. '22:23'. '22:33'. '22:43'. '22:53'. '23:03'.
-	  '23:13'. '23:23'. '23:33'. '23:43'. '23:53'. '23:35'}
+	  '23:13'. '23:23'. '23:33'. '23:43'. '23:53'. }
 ]
