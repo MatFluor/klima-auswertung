@@ -46,5 +46,6 @@ KlimaMainPresenter >> initializeWindow: aWindowPresenter [
 
 	aWindowPresenter
 		title: 'Link+Filli Klimadatenauswertung';
-		initialExtent: 800 @ 400
+		initialExtent: 800 @ 400;
+		centered
 ]
