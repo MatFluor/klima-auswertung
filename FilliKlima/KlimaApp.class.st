@@ -11,5 +11,13 @@ KlimaApp >> start [
 
 	self currentWorld worldState worldRenderer windowTitle:
 		'Link+Filli Klimalogger Auswertung'.
+	(self new: KlimaMainPresenter) open
+]
+
+{ #category : 'running' }
+KlimaApp >> startAsWorld [
+
+	self currentWorld worldState worldRenderer windowTitle:
+		'Link+Filli Klimalogger Auswertung'.
 	(self new: KlimaMainPresenter) asWorldWindow open
 ]
