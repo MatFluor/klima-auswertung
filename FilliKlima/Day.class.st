@@ -151,7 +151,7 @@ Day >> plotHum [
 		self times at: l + 1 ifAbsent: [ self times last ] ].
 	c horizontalTick useDiagonalLabel.
 	c xlabel: 'Uhrzeit'.
-	c ylabel: 'Rel. Feuchtigkeit'.
+	c ylabel: 'Rel. Feuchtigkeit (%)'.
 	c title:(self date printFormat: #(1 2 3 $. 1 1 2)).
 	c add: lineplot.
 	b := RSLegend new.
@@ -161,7 +161,7 @@ Day >> plotHum [
 				withBorder;
 				padding: 10;
 				scaleBy: 0.75 ].
-	b text: 'Rel. Feuchtigkeit (%)' withBoxColor: Color blue.
+	b text: 'Rel. Feuchtigkeit' withBoxColor: Color blue.
 	b location
 		right;
 		middle;
