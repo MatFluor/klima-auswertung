@@ -2,11 +2,9 @@ Class {
 	#name : 'KlimaMainPresenter',
 	#superclass : 'SpPresenter',
 	#instVars : [
-		'fileEntryField',
-		'loadButton',
-		'loadInfactoryButton',
 		'chosenFile',
-		'statsPresenter'
+		'statsPresenter',
+		'toolBar'
 	],
 	#category : 'FilliKlima-Spec',
 	#package : 'FilliKlima',
@@ -17,9 +15,6 @@ Class {
 KlimaMainPresenter >> defaultLayout [
 
 	^ SpBoxLayout newTopToBottom
-		  add: loadButton expand: false;
-		add: loadInfactoryButton expand: false;
-		  yourself
 ]
 
 { #category : 'initialization' }
@@ -32,27 +27,40 @@ KlimaMainPresenter >> initialize [
 { #category : 'initialization' }
 KlimaMainPresenter >> initializePresenters [
 
-	fileEntryField := self newTextInput text: (chosenFile ifNil: [ '' ]).
-	loadButton := self newButton
-		              icon: (self iconNamed: #open);
-		              label: 'Testo-CSV Laden';
-		              action: [
-				              chosenFile := StOpenFilePresenter new openModal
-					                            first.
-				              KlimaEntries readFromFile: chosenFile.
-				              self layout add:
-						              (KlimaStatsPresenter newApplication:
-								               self application). ].
-	loadInfactoryButton := self newButton
-		              icon: (self iconNamed: #open);
-		              label: 'Infactory-CSV Laden';
-		              action: [
-				              chosenFile := StOpenFilePresenter new openModal
-					                            first.
-				              KlimaEntries readFromInfactoryFile: chosenFile.
-				              self layout add:
-						              (KlimaStatsPresenter newApplication:
-								               self application). ]
+	self initializeToolBar.
+]
+
+{ #category : 'accessing' }
+KlimaMainPresenter >> initializeToolBar [
+
+	toolBar := self newToolbar
+		           addItemRight: (self newToolbarButton
+				            icon: (self iconNamed: #smallQuit);
+				            label: 'Quit';
+				            action: [
+					            self defer: [ self application closeAllWindows. Smalltalk snapshot: false andQuit: true ] ]);
+		           addItemLeft: (self newToolbarButton
+				            icon: (self iconNamed: #open);
+				            label: 'Testo CSV';
+				            action: [
+						            self defer: [
+									            chosenFile := StOpenFilePresenter new openModal
+										                          first.
+									            KlimaEntries readFromFile: chosenFile.
+									            self layout add:
+											            (KlimaStatsPresenter newApplication:
+													             self application) ] ]);
+		           addItemLeft: (self newToolbarButton
+				            icon: (self iconNamed: #open);
+				            label: 'Infactory CSV';
+				            action: [
+						            self defer: [
+									            chosenFile := StOpenFilePresenter new openModal
+										                          first.
+									            KlimaEntries readFromInfactoryFile: chosenFile.
+									            self layout add:
+											            (KlimaStatsPresenter newApplication:
+													             self application) ] ])
 ]
 
 { #category : 'accessing' }
@@ -60,6 +68,6 @@ KlimaMainPresenter >> initializeWindow: aWindowPresenter [
 
 	aWindowPresenter
 		title: 'Link+Filli Klimadatenauswertung';
-		initialExtent: 800 @ 400;
-		centered
+		toolbar: toolBar;
+		withoutDecorations 
 ]

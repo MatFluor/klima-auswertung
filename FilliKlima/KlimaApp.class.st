@@ -9,5 +9,5 @@ Class {
 { #category : 'running' }
 KlimaApp >> start [
 
-	(self new: KlimaMainPresenter) open
+	((self new: KlimaMainPresenter) open) window maximize
 ]
