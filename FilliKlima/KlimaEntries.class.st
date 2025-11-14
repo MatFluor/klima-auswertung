@@ -323,6 +323,7 @@ KlimaEntries class >> readFromFile: aCsvFile [
 				entries
 					detect: [ :e | e date = vDate ]
 					ifFound: [ :d |
+						  d times add: ((v at: 2) splitOn: ' ') second.
 							d temperatures add: (v at: 4).
 							d humidities add: (v at: 3) ]
 					ifNone: [
@@ -356,6 +357,7 @@ KlimaEntries class >> readFromInfactoryFile: aCsvFile [
 				entries
 					detect: [ :e | e date = vDate ]
 					ifFound: [ :d |
+							d times add: ((v at: 2) splitOn: ' ') second.
 							d temperatures add: (v at: 3).
 							d humidities add: (v at: 4) ]
 					ifNone: [
