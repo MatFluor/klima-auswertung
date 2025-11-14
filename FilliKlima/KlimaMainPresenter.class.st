@@ -4,6 +4,7 @@ Class {
 	#instVars : [
 		'fileEntryField',
 		'loadButton',
+		'loadInfactoryButton',
 		'chosenFile',
 		'statsPresenter'
 	],
@@ -17,6 +18,7 @@ KlimaMainPresenter >> defaultLayout [
 
 	^ SpBoxLayout newTopToBottom
 		  add: loadButton expand: false;
+		add: loadInfactoryButton expand: false;
 		  yourself
 ]
 
@@ -38,6 +40,16 @@ KlimaMainPresenter >> initializePresenters [
 				              chosenFile := StOpenFilePresenter new openModal
 					                            first.
 				              KlimaEntries readFromFile: chosenFile.
+				              self layout add:
+						              (KlimaStatsPresenter newApplication:
+								               self application). ].
+	loadInfactoryButton := self newButton
+		              icon: (self iconNamed: #open);
+		              label: 'Infactory-CSV Laden';
+		              action: [
+				              chosenFile := StOpenFilePresenter new openModal
+					                            first.
+				              KlimaEntries readFromInfactoryFile: chosenFile.
 				              self layout add:
 						              (KlimaStatsPresenter newApplication:
 								               self application). ]

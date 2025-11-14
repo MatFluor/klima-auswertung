@@ -334,6 +334,39 @@ KlimaEntries class >> readFromFile: aCsvFile [
 ]
 
 { #category : 'instance creation' }
+KlimaEntries class >> readFromInfactoryFile: aCsvFile [
+
+	| values newDay |
+	self reset.
+	values := (NeoCSVReader on: aCsvFile readStream)
+		          separator: Character tab;
+		          skipHeader;
+		          addIntegerField;
+		          addField;
+		          addFloatField;
+		          addFloatField;
+		          upToEnd.
+
+	values
+		do: [ :v |
+			| vDate |
+				vDate := Date
+					         readFrom: ((v at: 2) splitOn: ' ') first
+					         pattern: 'yyyy-mm-dd'.
+				entries
+					detect: [ :e | e date = vDate ]
+					ifFound: [ :d |
+							d temperatures add: (v at: 3).
+							d humidities add: (v at: 4) ]
+					ifNone: [
+							newDay := Day new date: vDate.
+							newDay temperatures add: (v at: 3).
+							newDay humidities add: (v at: 4).
+							entries add: newDay ] ]
+		displayingProgress: [ 'Lese CSV ein, bitte warten...' ]
+]
+
+{ #category : 'instance creation' }
 KlimaEntries class >> reset [
 	entries := OrderedCollection new.
 ]
