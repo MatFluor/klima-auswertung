@@ -8,6 +8,8 @@ Class {
 
 { #category : 'running' }
 KlimaApp >> start [
-	self currentWorld worldState worldRenderer windowTitle: 'Link+Filli Klimalogger Auswertung'.
-	(self new: KlimaMainPresenter) open window maximize
+
+	self currentWorld worldState worldRenderer windowTitle:
+		'Link+Filli Klimalogger Auswertung'.
+	(self new: KlimaMainPresenter) asWorldWindow open
 ]
