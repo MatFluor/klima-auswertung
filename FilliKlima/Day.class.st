@@ -161,7 +161,7 @@ Day >> plotHum [
 				withBorder;
 				padding: 10;
 				scaleBy: 0.75 ].
-	b text: 'Feuchtigkeit' withBoxColor: Color blue.
+	b text: 'Rel. Feuchtigkeit (%)' withBoxColor: Color blue.
 	b location
 		right;
 		middle;
@@ -173,7 +173,7 @@ Day >> plotHum [
 { #category : 'plots' }
 Day >> plotTemp [
 
-	| b c lineplot b |
+	| b c lineplot |
 	c := RSCompositeChart new.
 	c extent: 800 @ 400.
 	lineplot := RSLinePlot new.
@@ -184,7 +184,7 @@ Day >> plotTemp [
 		self times at: l + 1 ifAbsent: [ self times last ] ].
 	c horizontalTick useDiagonalLabel.
 	c xlabel: 'Uhrzeit'.
-	c ylabel: 'Temperatur'.
+	c ylabel: 'Temperatur (°C)'.
 	c title: (self date printFormat: #(1 2 3 $. 1 1 2)).
 	c add: lineplot.
 
