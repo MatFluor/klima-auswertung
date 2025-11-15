@@ -107,19 +107,18 @@ KlimaStatsPresenter >> rightClickActions [
 		  addActionWith: [ :item |
 				  item
 					  name: 'Rohdaten Inspector öffnen';
-					  action: [ valuesTable selectedItem second inspect ] ];
+					  action: [ self defer: [valuesTable selectedItem second inspect] ] ];
 		  addActionWith: [ :item |
 				  item
 					  name: 'Temperaturplot ansehen';
-					  action: [
+					  action: [ self defer: [
 							  chartPresenter layout add:
-									  valuesTable selectedItem second plotTemp open ] ];
+									  valuesTable selectedItem second plotTemp open] ] ];
 		  addActionWith: [ :item |
 				  item
 					  name: 'Feuchtigkeitsplot ansehen';
-					  action: [
-							  chartPresenter layout add:
-									  valuesTable selectedItem second plotHum open ] ]
+					  action: [ self defer: [chartPresenter layout add:
+	valuesTable selectedItem second plotHum open] ] ]
 ]
 
 { #category : 'api' }
