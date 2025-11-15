@@ -11,7 +11,7 @@ Class {
 	#tag : 'Spec'
 }
 
-{ #category : 'initialization' }
+{ #category : 'layout' }
 KlimaStatsPresenter >> defaultLayout [
 
 	^ SpBoxLayout newTopToBottom
@@ -23,30 +23,30 @@ KlimaStatsPresenter >> defaultLayout [
 				   spacing: 5;
 				   add: (self newButton
 						    label: 'Jahres-Temperaturplot ansehen';
-						    action: [
-							    chartPresenter layout add: KlimaEntries plotMinMaxTemp open ]);
+						    action: [ self defer: [
+							    chartPresenter layout add: KlimaEntries plotMinMaxTemp open] ]);
 				   add: (self newButton
 						    label: 'Jahres-Feuchtigkeitsplot ansehen';
-						    action: [
-							    chartPresenter layout add: KlimaEntries plotMinMaxHum open ]))
+						    action: [ self defer: [ 
+							    chartPresenter layout add: KlimaEntries plotMinMaxHum open ]]))
 		  expand: false;
 		  add: (SpBoxLayout newLeftToRight
 				   spacing: 5;
 				   add: monthDropdown;
 				   add: (self newButton
 						    label: 'Monats Temperaturplot ansehen';
-						    action: [
+						    action: [ self defer: [
 								    chartPresenter layout add: (KlimaEntries
 											     plotMinMaxTempByMonth:
 												     monthDropdown selectedItem monthIndex
-											     andYear: monthDropdown selectedItem year) open ]);
+											     andYear: monthDropdown selectedItem year) open] ]);
 				   add: (self newButton
 						    label: 'Monats Feuchtigkeitsplot ansehen';
-						    action: [
+						    action: [ self defer: [
 								    chartPresenter layout add: (KlimaEntries
 											     plotMinMaxHumByMonth:
 												     monthDropdown selectedItem monthIndex
-											     andYear: monthDropdown selectedItem year) open ]))
+											     andYear: monthDropdown selectedItem year) open] ]))
 		  expand: false;
 		  yourself
 ]
